@@ -14,7 +14,7 @@ namespace Dubashi;
  *
  * @copyright Copyright (c) 2015 WebStudio 900
  * @author Gautam Dubashi
- * @contact qassabgautam at github.com
+ * @contact gautam dubashi at github.com
  *
  * @date 2015-10-01
  *
