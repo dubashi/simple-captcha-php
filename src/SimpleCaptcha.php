@@ -1,5 +1,5 @@
 <?php
-namespace dubashi\SimpleCaptchaPhp;
+namespace Dubashi;
 
 /**
  * -= SimpleCaptcha =-
