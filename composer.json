@@ -1,0 +1,24 @@
+{
+    "name": "dubashi/simple-captcha-php",
+    "description": "Generate captcha image without using fonts, splitted captcha image or make animated GIF captcha",
+    "type": "library",
+    "keywords": ["captcha", "php", "simple", "nofont", "gif", "split", "spam", "bot", "antibot"],
+    "readme": "README.md",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Gautam Dubashi",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+      "php": ">=5.2.0",
+		  "ext-gd": "*",
+    },
+    "autoload": {
+        "psr-4": {
+            "Dubashi\\SimpleCaptchaPhp\\": "src/"
+        }
+    }
+}
