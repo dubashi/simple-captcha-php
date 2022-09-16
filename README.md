@@ -52,6 +52,8 @@ $captcha->outputImgHtml();
 
 # Options
 
+You can use theses options :
+
 * **width**, Width of result image(s) in pixels. Default: 100
 * **height**, Height of result image(s) in pixels. Default: 50
 * **type**, Type of result image(s). One of GD constants. Default: IMAGETYPE_JPEG
@@ -69,7 +71,7 @@ $captcha->outputImgHtml();
 
 # API
 
-You can use theses functions :
+You can use theses methods :
 
 * **create( $code )**, Create Simple Captcha image with specified string code
 * **output()**, Output image into stdout or browser
