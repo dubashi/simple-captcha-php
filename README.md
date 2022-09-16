@@ -33,6 +33,9 @@ Or can create animated captcha :
 <?php
 use Dubashi\SimpleCaptcha;
 
+// create your own code
+$code = '0123';
+
 // Create animated GIF captcha and save it into file
 $captcha = (new SimpleCaptcha([
       'type'      => \IMAGETYPE_GIF,
