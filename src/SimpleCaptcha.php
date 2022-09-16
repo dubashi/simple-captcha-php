@@ -12,7 +12,7 @@ namespace Dubashi;
  *
  * @version 2.x
  *
- * @copyright Copyright (c) 2015 WebStudio 880
+ * @copyright Copyright (c) 2015 WebStudio 900
  * @author Gautam Dubashi
  * @contact qassabgautam at github.com
  *
@@ -285,32 +285,32 @@ class SimpleCaptcha
 		$pointsNumX = 2,
 		$pointsNumY = 3
 	) {
-
 		$this->_symbols = array_merge( $this->_symbols, $symbols );
-
 		$this->_pointsNumX = $pointsNumX;
 		$this->_pointsNumY = $pointsNumY;
 	}
 
 	/**
-	 * Output specified part of image into Browser
+	 * Output specified part of image(s) into stdout or Browser
 	 *
 	 * @param integer $partNum Number part of image(s). Default: 0
+	 * @param boolean $withHttpHeaders Also output http headers for image
 	 *
 	 * @return self
 	 */
-	public function outputIntoBrowser (
-		$partNum = 0
+	public function output (
+		$partNum = 0,
+		$withHttpHeaders = true
 	) {
-		header("Cache-Control: no-cache, must-revalidate");
-		header("Expires: Sun, 22 Jul 2035 00:00:00 GMT");
-		header("Content-Type: " . image_type_to_mime_type( $this->type ));
-
 		$images = $this->_images();
-
-		header("Content-Length: " . strlen( $images[ $partNum ] ));
+		if ( $withHttpHeaders )
+		{
+			header("Cache-Control: no-cache, must-revalidate");
+			header("Expires: Sun, 22 Jul 2035 00:00:00 GMT");
+			header("Content-Type: " . image_type_to_mime_type( $this->type ));
+			header("Content-Length: " . strlen( $images[ $partNum ] ));
+		}
 		echo $images[ $partNum ];
-
 		return $this;
 	}
 
@@ -322,12 +322,11 @@ class SimpleCaptcha
 	 *
 	 * @return self
 	 */
-	public function outputIntoFile (
+	public function outputFile (
 		$filename,
 		$partNum = null
 	) {
 		$images = $this->_images();
-
 		foreach( $images as $k=>$image )
 		{
 			if ( !($partNum === null || $partNum === $k) ) continue;
@@ -347,17 +346,41 @@ class SimpleCaptcha
 	}
 
 	/**
-	 * Returns base64 encoded data of specified part of image
+	 * Output Base64 encoded data of specified part of image
 	 *
 	 * @param integer $partNum Number part of image(s). Default: 0
 	 *
 	 * @return string
 	 */
-	public function outputIntoDataURI (
+	public function outputDataURI (
+		$partNum = 0
+	) {
+		echo $this->getDataURI( $partNum );
+		return $this;
+	}
+	
+	/**
+	 * Output IMG tag with Simple Captcha image(s) using CSS3 backround property
+	 *
+	 * @return string The IMG tag for HTML page
+	 */
+	public function outputImgHtml ()
+	{
+		echo $this->getImgHtml();
+		return $this;
+	}
+
+	/**
+	 * Returns Base64 encoded data of specified part of image
+	 *
+	 * @param integer $partNum Number part of image(s). Default: 0
+	 *
+	 * @return string
+	 */
+	public function getDataURI (
 		$partNum = 0
 	) {
 		$images = $this->_images();
-
 		return
 			'data:'
 			. image_type_to_mime_type( $this->type )
@@ -371,36 +394,35 @@ class SimpleCaptcha
 	 *
 	 * @return string The IMG tag for HTML page
 	 */
-	public function outputIntoImgHtml ()
+	public function getImgHtml ()
 	{
-
 		$images = $this->_images();
 		$count = sizeof( $images );
 		$imagesDataUri = array();
+		$mime = image_type_to_mime_type( $this->type );
 
 		for( $i = 0; $i < $count; $i++ )
 		{
 			$imagesDataUri[] = ''
 					. ( $i ? "url('" : "" )
 					. 'data:'
-						. image_type_to_mime_type( $this->type )
+						. $mime
 						. ';base64,'
 						. base64_encode( $images[ $i ] )
 					. ( $i ? "') left top no-repeat" : "" )
 				;
 		}
-
 		return
 			'<img src="'
-			. array_shift($imagesDataUri)
+			. array_shift( $imagesDataUri )
 			. '"'
 			. ( $count > 1
 					? ' style="background: '
-						. implode(', ', $imagesDataUri)
+						. implode( ', ', $imagesDataUri )
 						. '"'
 					: ''
 				)
-			. ' alt="Simple Captcha"/>'
+			. ' alt="Dubashi Simple Captcha"/>'
 		;
 	}
 
@@ -738,13 +760,11 @@ class SimpleCaptcha
 					;
 			}
 		}
-
 		// Add GIF frames
 		for ($i = 0; $i < sizeof($frames); $i++)
 		{
 			$this->_gifAddFrame( $frames, $i, $this->duration );
 		}
-
 		// Add the gif string footer char
 		$this->_gif .= ';';
 
@@ -865,7 +885,7 @@ class SimpleCaptcha
 		return 1;
 	}
 
-    /**
+	/**
 	 * Convert an integer to 2-byte little-endian binary data
 	 *
 	 * @param integer $word Number to encode
