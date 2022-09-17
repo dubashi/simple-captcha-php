@@ -20,11 +20,11 @@ You can create a simple captcha :
 <?php
 use Dubashi\SimpleCaptcha;
 
+// create your own code
 $code = '0123';
-$options = [ 'thickness' => 5, 'emboss' => true, ]; // optional
 
 // Output http-response with captcha image
-$captcha = (new SimpleCaptcha( $options ))->create( $code )->output();
+(new SimpleCaptcha())->create( $code )->output();
 ```
 
 Or can create animated captcha :
@@ -81,10 +81,10 @@ You can use theses methods :
 * **create( $code )**, Create Simple Captcha image with specified string code
 * **output()**, Output image into stdout or browser
 * **outputFile()**, Save Simple Captcha image(s) into file
-* **outputDataURI()**, Output base64 encoded data of specified part of image
-* **getDataURI()**, Returns base64 encoded data of specified part of image
+* **outputDataUri()**, Output base64 encoded data of specified part of image
+* **dataUri()**, Returns base64 encoded data of specified part of image
 * **outputImgHtml()**, Output IMG tag
-* **getImgHtml()**, Returns IMG tag with captcha image(s)
+* **imgHtml()**, Returns IMG tag with captcha image(s)
 * **split()**, Split source captcha image to parts
 * **setSymbolsScheme()**, Set your own symbols scheme. See description of this method in code
 
