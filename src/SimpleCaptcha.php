@@ -10,9 +10,9 @@ namespace Dubashi;
  *
  * Public properties of Class for tuning Simple Captcha on construct Class
  *
- * @version 2.x
+ * @version 1.x
  *
- * @copyright Copyright (c) 2015 WebStudio 993
+ * @copyright Copyright (c) 2015 WebStudio 999
  * @author Gautam Dubashi
  * @contact gautam dubashi at github.com
  *
@@ -364,10 +364,10 @@ class SimpleCaptcha
 	 *
 	 * @return string
 	 */
-	public function outputDataURI (
+	public function outputDataUri (
 		$partNum = 0
 	) {
-		echo $this->getDataURI( $partNum );
+		echo $this->dataURI( $partNum );
 		return $this;
 	}
 	
@@ -378,7 +378,7 @@ class SimpleCaptcha
 	 */
 	public function outputImgHtml ()
 	{
-		echo $this->getImgHtml();
+		echo $this->imgHtml();
 		return $this;
 	}
 
@@ -389,7 +389,7 @@ class SimpleCaptcha
 	 *
 	 * @return string
 	 */
-	public function getDataURI (
+	public function dataUri (
 		$partNum = 0
 	) {
 		$images = $this->_images();
@@ -406,7 +406,7 @@ class SimpleCaptcha
 	 *
 	 * @return string The IMG tag for HTML page
 	 */
-	public function getImgHtml ()
+	public function imgHtml ()
 	{
 		$images = $this->_images();
 		$count = sizeof( $images );
@@ -542,24 +542,30 @@ class SimpleCaptcha
 	 * Split source captcha image to parts
 	 *
 	 * @param integer $partsNum Number of parts for split image. Default: 2
-	 * @param string $direct 'horisontal' or 'vertical' value. Default: vertical
+	 * @param array $options Key "direct" = 'horisontal' or 'vertical' value. Default: vertical
 	 *
 	 * @return self
 	 */
 	public function split (
 		$partsNum = 2,
-		$direct = 'vertical'
+		$options = array()
 	) {
 		$count = sizeof( (array)$this->_image );
 		if ( $count > 1 ) return $this;
 
 		$images = array();
+		
+		$options['direct'] = isset($options['direct']) 
+				? $options['direct'] 
+				: 'vertical'
+			;
+		// TODO: adding options[noise,gradient,emboss,nightmare] for every copy image
 
 		for( $i = 0; $i < $partsNum; $i++ ) {
 
 			$images[$i] = $this->_createImage();
 
-			if ( $direct == 'vertical' )
+			if ( $options['direct'] == 'vertical' )
 			{
 				$y = $i * $this->height / $partsNum;
 				imagecopy(
