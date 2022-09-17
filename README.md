@@ -69,6 +69,7 @@ You can use theses options :
 * **randSym**, Flag for use random symbols scheme. Default: false
 * **emboss**, Flag for use emboss filter for image. Default: false
 * **nightmare**, Flag for added more nightmare for bots and your users. Default: false
+* **gradient**, Add gradient to image. Signed integer as -1, 0, 1. Default: 0 (none)
 * **duration**, The duration for GIF frames (in 1/100s). Default: 2
 * **loop**, Loop GIF frames. Default: 0 (infinity)
 
