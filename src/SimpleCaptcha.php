@@ -12,7 +12,7 @@ namespace Dubashi;
  *
  * @version 2.x
  *
- * @copyright Copyright (c) 2015 WebStudio 900
+ * @copyright Copyright (c) 2015 WebStudio 930
  * @author Gautam Dubashi
  * @contact gautam dubashi at github.com
  *
