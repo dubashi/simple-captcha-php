@@ -2,7 +2,7 @@
 
 Generate captcha image without using fonts, splitted captcha image or make animated GIF captcha.
 
-![Captchas examples](https://github.com/dubashi/simple-captcha-php/blob/main/example.gif)
+![Captchas examples](https://github.com/dubashi/simple-captcha-php/blob/main/examples.gif)
 
 # Installation
 
