@@ -47,7 +47,7 @@ $captcha = (new SimpleCaptcha([
   ;
   
 // ..and get base64 data of image for own usage
-$dataBase64 = $captcha->getDataURI();
+$dataBase64 = $captcha->dataURI();
 
 // ..or just output <img> tag into yours html-templaters
 $captcha->outputImgHtml();
