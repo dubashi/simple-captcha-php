@@ -12,7 +12,7 @@ namespace Dubashi;
  *
  * @version 2.x
  *
- * @copyright Copyright (c) 2015 WebStudio 930
+ * @copyright Copyright (c) 2015 WebStudio 993
  * @author Gautam Dubashi
  * @contact gautam dubashi at github.com
  *
@@ -115,7 +115,14 @@ class SimpleCaptcha
 	 * 
 	 * @var integer Signed value: -1, 0, 1
 	 */
-	public $gradient = 0;
+	public $gradient		= 0;
+
+	/**
+	 * Add noise
+	 *
+	 * @var integer Percent of all pixels of image
+	 */
+	public $noise			= 0;
 
 	/**
 	 * The duration for GIF frames (in 1/100s)
@@ -253,7 +260,6 @@ class SimpleCaptcha
 	public function __construct (
 		$options = array()
 	) {
-
 		foreach ( $options as $parameter=>$value )
 		{
 			if (
@@ -263,7 +269,6 @@ class SimpleCaptcha
 				$this->$parameter = $value;
 			}
 		}
-
 		return $this;
 	}
 
@@ -446,6 +451,8 @@ class SimpleCaptcha
 		$this->_image = $this->_createImage();
 		
 		if ( $this->gradient != 0 ) $this->_gradient( $this->_image );
+		
+		if ( $this->noise > 0 ) $this->_noise( $this->_image );
 
 		$padding = 0;
 
@@ -482,7 +489,7 @@ class SimpleCaptcha
 		$x = $padding + $this->thickness;
 		$y = $padding + $this->thickness;
 
-		foreach($symbols as $p=>$symbol)
+		foreach( $symbols as $p=>$symbol )
 		{
 			$symbol = isset($this->_symbols[$symbol])? $symbol : 'not found';
 			$key = $this->randSym? array_rand($this->_symbols[ $symbol ]) : 0;
@@ -522,41 +529,12 @@ class SimpleCaptcha
 			$x += $padding + $charCellWidth;
 		}
 
-		if ( $this->nightmare )
-		{
-			$size = $this->width > $this->height? $this->width : $this->height;
-			for(
-				$p = -$this->thickness/2, $i=0;
-				$p < $size;
-				$p += $this->thickness*2, $i++
-			) {
-				if ( !$i || $i&1 ) continue;
+		if ( $this->nightmare ) $this->_nightmare( $this->_image, $points[0][1], $points[4][1], $fX, $fY );
 
-				$r = mt_rand(-1,1);
-				imageline($this->_image,
-						$p + $r,
-						$points[0][1] - $fX/2,
-						$p + $r,
-						$points[4][1] - $fX/2,
-						IMG_COLOR_STYLED
-					);
-			}
-		}
+		if ( $this->emboss ) $this->_emboss( $this->_image );
 
-		if ( $this->emboss )
-		{
-			$emboss = array(
-				array(2, 0,  0),
-				array(0, -1, 0),
-				array(0, 0, -1),
-			);
-			imageconvolution(
-					$this->_image,
-					$emboss,
-					1,
-					255
-				);
-		}
+		if ( $this->noise < 0 ) $this->_noise( $this->_image );
+
 		return $this;
 	}
 
@@ -676,8 +654,9 @@ class SimpleCaptcha
 	 * 
 	 * @param GD_image $image
 	 */
-	private function _gradient( &$image )
-	{
+	private function _gradient(
+		&$image
+	) {
 		$start = $this->gradient < 0 ? $this->colorFont : $this->colorBackground;
 		$end = $this->gradient < 0 ? $this->colorBackground : $this->colorFont;
 
@@ -690,6 +669,90 @@ class SimpleCaptcha
 			$color = imagecolorallocate( $image, $r, $g, $b );
 			imagefilledrectangle( $image, 0, $i, $this->width, $i+1, $color );
 		}
+	}
+
+	/**
+	 * Add nightmare
+	 * 
+	 * @param GD_image $image
+	 * @param float $Y1
+	 * @param float $Y2
+	 * @param float $fX
+	 * @param float $fY
+	 */
+	private function _nightmare (
+		&$image,
+		$Y1,
+		$Y2,
+		$fX,
+		$fY
+	) {
+		$size = $this->width > $this->height? $this->width : $this->height;
+		for(
+			$p = -$this->thickness/2, $i=0;
+			$p < $size;
+			$p += $this->thickness*2, $i++
+		) {
+			if ( !$i || $i&1 ) continue;
+
+			$r = mt_rand(-1,1);
+			imageline(
+					$image,
+					$p + $r,
+					$Y1 - $fX/2,
+					$p + $r,
+					$Y2 - $fY/2,
+					IMG_COLOR_STYLED
+				);
+		}
+	}
+
+	/**
+	 * Add noise to image
+	 *
+	 * @param GD_image $image
+	 */
+	private function _noise(
+		&$image
+	) {
+		for(
+			$i = 0;
+			$i < ( $this->width * $this->height * abs($this->noise) / 100);
+			$i++
+		) {
+			$ptx = mt_rand( 0, $this->width );
+			$pty = mt_rand( 0, $this->height );
+
+			imageline(
+					$image,
+					$ptx,
+					$pty,
+					$ptx+1,
+					$pty+1,
+					IMG_COLOR_STYLED
+				);
+		}
+	}
+	
+	/**
+	 * Add emboss effect
+	 * 
+	 * @param GD_image $image
+	 */
+	private function _emboss (
+		&$image
+	) {
+		$emboss = array(
+				array(2, 0,  0),
+				array(0, -1, 0),
+				array(0, 0, -1),
+			);
+		imageconvolution(
+				$image,
+				$emboss,
+				1,
+				255
+			);
 	}
 
 	/**
@@ -749,7 +812,7 @@ class SimpleCaptcha
 	 *
 	 * @return boolean
 	 */
-	private function _possibleGifAnimation()
+	private function _possibleGifAnimation ()
 	{
 		return (
 			sizeof( (array)$this->_image ) > 1
@@ -791,7 +854,7 @@ class SimpleCaptcha
 			}
 		}
 		// Add GIF frames
-		for ($i = 0; $i < sizeof($frames); $i++)
+		for ( $i = 0; $i < sizeof($frames); $i++ )
 		{
 			$this->_gifAddFrame( $frames, $i, $this->duration );
 		}
@@ -925,6 +988,6 @@ class SimpleCaptcha
 	private function _word2bin (
 		$word
 	) {
-		return (chr($word & 0xFF).chr(($word >> 8) & 0xFF));
+		return ( chr($word & 0xFF) . chr(($word >> 8) & 0xFF) );
 	}
 }
