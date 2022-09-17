@@ -109,6 +109,13 @@ class SimpleCaptcha
 	 * @var boolean
 	 */
 	public $nightmare		= false;
+	
+	/**
+	 * Add gradient direction
+	 * 
+	 * @var integer Signed value: -1, 0, 1
+	 */
+	public $gradient = 0;
 
 	/**
 	 * The duration for GIF frames (in 1/100s)
@@ -437,6 +444,8 @@ class SimpleCaptcha
 		$stringCode
 	) {
 		$this->_image = $this->_createImage();
+		
+		if ( $this->gradient != 0 ) $this->_gradient( $this->_image );
 
 		$padding = 0;
 
@@ -660,6 +669,27 @@ class SimpleCaptcha
 		imagesavealpha($image, true);
 
 		return $image;
+	}
+	
+	/**
+	 * Add gradient to image
+	 * 
+	 * @param GD_image $image
+	 */
+	private function _gradient( &$image )
+	{
+		$start = $this->gradient < 0 ? $this->colorFont : $this->colorBackground;
+		$end = $this->gradient < 0 ? $this->colorBackground : $this->colorFont;
+
+		for( $i = 0; $i < $this->height; $i++ )
+		{
+			$r = $start[0] - ((($start[0]-$end[0])/$this->height)*$i);
+			$g = $start[1] - ((($start[1]-$end[1])/$this->height)*$i);
+			$b = $start[2] - ((($start[2]-$end[2])/$this->height)*$i);
+
+			$color = imagecolorallocate( $image, $r, $g, $b );
+			imagefilledrectangle( $image, 0, $i, $this->width, $i+1, $color );
+		}
 	}
 
 	/**
