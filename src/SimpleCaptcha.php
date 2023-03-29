@@ -12,7 +12,7 @@ namespace Dubashi;
  *
  * @version 1.x
  *
- * @copyright Copyright (c) 2015 WebStudio 999
+ * @copyright Copyright (c) 2015 WebStudio 1005
  * @author Gautam Dubashi
  * @contact gautam dubashi at github.com
  *
@@ -87,7 +87,7 @@ class SimpleCaptcha
 	 *
 	 * @var boolean
 	 */
-	public $randPointPos	= false;
+	public $randPointPos		= false;
 
 	/**
 	 * Flag for use random symbols scheme
@@ -109,10 +109,10 @@ class SimpleCaptcha
 	 * @var boolean
 	 */
 	public $nightmare		= false;
-	
+
 	/**
 	 * Add gradient direction
-	 * 
+	 *
 	 * @var integer Signed value: -1, 0, 1
 	 */
 	public $gradient		= 0;
@@ -370,7 +370,7 @@ class SimpleCaptcha
 		echo $this->dataURI( $partNum );
 		return $this;
 	}
-	
+
 	/**
 	 * Output IMG tag with Simple Captcha image(s) using CSS3 backround property
 	 *
@@ -449,9 +449,9 @@ class SimpleCaptcha
 		$stringCode
 	) {
 		$this->_image = $this->_createImage();
-		
+
 		if ( $this->gradient != 0 ) $this->_gradient( $this->_image );
-		
+
 		if ( $this->noise > 0 ) $this->_noise( $this->_image );
 
 		$padding = 0;
@@ -554,16 +554,19 @@ class SimpleCaptcha
 		if ( $count > 1 ) return $this;
 
 		$images = array();
-		
-		$options['direct'] = isset($options['direct']) 
-				? $options['direct'] 
+
+		$options['direct'] = isset($options['direct'])
+				? $options['direct']
 				: 'vertical'
 			;
-		// TODO: adding options[noise,gradient,emboss,nightmare] for every copy image
 
 		for( $i = 0; $i < $partsNum; $i++ ) {
 
 			$images[$i] = $this->_createImage();
+
+			if ( $this->gradient != 0 ) $this->_gradient( $images[$i] );
+
+			if ( $this->noise > 0 ) $this->_noise( $images[$i] );
 
 			if ( $options['direct'] == 'vertical' )
 			{
@@ -592,9 +595,12 @@ class SimpleCaptcha
 						$this->height
 					);
 			}
+
+			if ( $this->noise < 0 ) $this->_noise( $images[$i] );
 		}
 		imagedestroy($this->_image);
 
+		shuffle($images);
 		$this->_image = $images;
 
 		return $this;
@@ -654,10 +660,10 @@ class SimpleCaptcha
 
 		return $image;
 	}
-	
+
 	/**
 	 * Add gradient to image
-	 * 
+	 *
 	 * @param GD_image $image
 	 */
 	private function _gradient(
@@ -679,7 +685,7 @@ class SimpleCaptcha
 
 	/**
 	 * Add nightmare
-	 * 
+	 *
 	 * @param GD_image $image
 	 * @param float $Y1
 	 * @param float $Y2
@@ -739,10 +745,10 @@ class SimpleCaptcha
 				);
 		}
 	}
-	
+
 	/**
 	 * Add emboss effect
-	 * 
+	 *
 	 * @param GD_image $image
 	 */
 	private function _emboss (
