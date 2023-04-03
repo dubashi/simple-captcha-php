@@ -846,9 +846,9 @@ class SimpleCaptcha
 		// Assemble the GIF header
 		$this->_gif = 'GIF89a';
 
-		if ( ord($frames[0] { 10 }) & 0x80 )
+		if ( ord($frames[0] [ 10 ]) & 0x80 )
 		{
-			$cmap = 3 * (2 << (ord($frames[0] { 10 }) & 0x07));
+			$cmap = 3 * (2 << (ord($frames[0] [ 10 ]) & 0x07));
 
 			$this->_gif .=
 				  substr($frames[0], 6, 7)
@@ -887,29 +887,29 @@ class SimpleCaptcha
 	{
 		$dis = 2; // "reset to bgnd." (http://www.matthewflickinger.com/lab/whatsinagif/animation_and_transparency.asp)
 
-		$localsStr = 13 + 3 * (2 << (ord($frames[ $i ] { 10 }) & 0x07));
+		$localsStr = 13 + 3 * (2 << (ord($frames[ $i ] [ 10 ]) & 0x07));
 
 		$localsEnd = strlen($frames[$i]) - $localsStr - 1;
 		$localsTmp = substr($frames[$i], $localsStr, $localsEnd);
 
-		$globalLen = 2 << (ord($frames[0 ] { 10 }) & 0x07);
-		$localsLen = 2 << (ord($frames[$i] { 10 }) & 0x07);
+		$globalLen = 2 << (ord($frames[ 0] [ 10 ]) & 0x07);
+		$localsLen = 2 << (ord($frames[$i] [ 10 ]) & 0x07);
 
-		$globalRGB = substr($frames[ 0], 13, 3 * (2 << (ord($frames[ 0] { 10 }) & 0x07)));
-		$localsRGB = substr($frames[$i], 13, 3 * (2 << (ord($frames[$i] { 10 }) & 0x07)));
+		$globalRGB = substr($frames[ 0], 13, 3 * (2 << (ord($frames[ 0] [ 10 ]) & 0x07)));
+		$localsRGB = substr($frames[$i], 13, 3 * (2 << (ord($frames[$i] [ 10 ]) & 0x07)));
 
 		$localsExt = "!\xF9\x04" . chr(($dis << 2) + 0) . $this->_word2bin($d) . "\x0\x0";
 
 		if (
 			$this->_transparentColor > -1
-			&& ord($frames[$i] { 10 }) & 0x80
+			&& ord($frames[$i] [ 10 ]) & 0x80
 		) {
-			for ( $j = 0; $j < (2 << (ord($frames[$i] { 10 } ) & 0x07)); $j++ )
+			for ( $j = 0; $j < (2 << (ord($frames[$i] [ 10 ] ) & 0x07)); $j++ )
 			{
 				if (
-					ord($localsRGB { 3 * $j + 0 }) == (($this->_transparentColor >> 16) & 0xFF)
-					&& ord($localsRGB { 3 * $j + 1 }) == (($this->_transparentColor >> 8) & 0xFF)
-					&& ord($localsRGB { 3 * $j + 2 }) == (($this->_transparentColor >> 0) & 0xFF)
+					ord($localsRGB [ 3 * $j + 0 ]) == (($this->_transparentColor >> 16) & 0xFF)
+					&& ord($localsRGB [ 3 * $j + 1 ]) == (($this->_transparentColor >> 8) & 0xFF)
+					&& ord($localsRGB [ 3 * $j + 2 ]) == (($this->_transparentColor >> 0) & 0xFF)
 				) {
 					$localsExt = "!\xF9\x04".chr(($dis << 2) + 1).chr(($d >> 0) & 0xFF).chr(($d >> 8) & 0xFF).chr($j)."\x0";
 					break;
@@ -917,7 +917,7 @@ class SimpleCaptcha
 			}
 		}
 
-		switch ( $localsTmp { 0 } )
+		switch ( $localsTmp [ 0 ] )
 		{
 			case '!':
 					$localsImg = substr($localsTmp, 8, 10);
@@ -930,7 +930,7 @@ class SimpleCaptcha
 		}
 
 		if (
-			ord($frames[$i] { 10 }) & 0x80
+			ord($frames[$i] [ 10 ]) & 0x80
 			&& $i
 		) {
 			if ( $globalLen == $localsLen )
@@ -940,21 +940,21 @@ class SimpleCaptcha
 					$this->_gif .= $localsExt.$localsImg.$localsTmp;
 				} else
 				{
-					$byte = ord($localsImg { 9 });
+					$byte = ord($localsImg [ 9 ]);
 					$byte |= 0x80;
 					$byte &= 0xF8;
-					$byte |= (ord($frames[0] { 10 }) & 0x07);
-					$localsImg { 9 } = chr($byte);
+					$byte |= (ord($frames[0] [ 10 ]) & 0x07);
+					$localsImg [ 9 ] = chr($byte);
 
 					$this->_gif .= $localsExt.$localsImg.$localsRGB.$localsTmp;
 				}
 			} else
 			{
-				$byte = ord($localsImg { 9 });
+				$byte = ord($localsImg [ 9 ]);
 				$byte |= 0x80;
 				$byte &= 0xF8;
-				$byte |= (ord($frames[$i] { 10 }) & 0x07);
-				$localsImg { 9 } = chr($byte);
+				$byte |= (ord($frames[$i] [ 10 ]) & 0x07);
+				$localsImg [ 9 ] = chr($byte);
 				$this->_gif .= $localsExt.$localsImg.$localsRGB.$localsTmp;
 			}
 		} else
