@@ -12,7 +12,7 @@ namespace Dubashi;
  *
  * @version 1.x
  *
- * @copyright Copyright (c) 2015 WebStudio 1005
+ * @copyright Copyright (c) 2015 WebStudio 1000
  * @author Gautam Dubashi
  * @contact gautam dubashi at github.com
  *
@@ -560,42 +560,37 @@ class SimpleCaptcha
 				: 'vertical'
 			;
 
+		$width  = $this->width  / $partsNum;
+		$height = $this->height / $partsNum;
+
 		for( $i = 0; $i < $partsNum; $i++ ) {
 
 			$images[$i] = $this->_createImage();
 
 			if ( $this->gradient != 0 ) $this->_gradient( $images[$i] );
-
 			if ( $this->noise > 0 ) $this->_noise( $images[$i] );
 
-			if ( $options['direct'] == 'vertical' )
-			{
-				$y = $i * $this->height / $partsNum;
-				imagecopy(
-						$images[$i],
-						$this->_image,
-						0,
-						$y,
-						0,
-						$y,
-						$this->width,
-						$this->height / $partsNum
-					);
-			} else
-			{
-				$x = $i * $this->width / $partsNum;
+			$x0 = ( $options['direct'] == 'vertical' )? 0 : $i * $width;
+			$y0 = ( $options['direct'] == 'vertical' )? $i * $height : 0;
+
+			for( $n = 0; $n < $partsNum; $n++ ) {
+
+				$x = $x0 + $n * $width;
+				$y = $y0 + $n * $height;
+				if ( $x >= $this->width -1 ) $x -= $this->width;
+				if ( $y >= $this->height -1 ) $y -= $this->height;
+
 				imagecopy(
 						$images[$i],
 						$this->_image,
 						$x,
-						0,
+						$y,
 						$x,
-						0,
-						$this->width  / $partsNum,
-						$this->height
+						$y,
+						$width,
+						$height
 					);
 			}
-
 			if ( $this->noise < 0 ) $this->_noise( $images[$i] );
 		}
 		imagedestroy($this->_image);
